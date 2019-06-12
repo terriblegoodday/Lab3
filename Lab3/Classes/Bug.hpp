@@ -12,11 +12,8 @@
 #include <stdio.h>
 #include <SFML/Graphics.hpp>
 
-class Colony;
-
 class Bug {
 public:
-    Colony* parent;
     sf::CircleShape shape;
     bool isStopped;
     void draw();
