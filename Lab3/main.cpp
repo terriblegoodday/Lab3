@@ -51,7 +51,7 @@ int main(int, char const**)
         }
 
         // Clear screen
-        window.clear();
+        window.clear(sf::Color::White);
 
         // Update the window
         window.display();
