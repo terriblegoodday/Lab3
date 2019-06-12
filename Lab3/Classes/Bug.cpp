@@ -7,7 +7,6 @@
 //
 
 #include "Bug.hpp"
-#include "Colony.hpp"
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
