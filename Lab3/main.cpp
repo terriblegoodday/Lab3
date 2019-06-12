@@ -19,11 +19,13 @@
 
 // Here is a small helper for you! Have a look.
 #include "ResourcePath.hpp"
+#include "Bug.hpp"
+#include "global.hpp"
 
 int main(int, char const**)
 {
     // Create the main window
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
+    sf::RenderWindow window(sf::VideoMode(WINDOWWIDTH, WINDOWHEIGHT), "SFML window");
 
     // Set the Icon
     sf::Image icon;
@@ -31,6 +33,8 @@ int main(int, char const**)
         return EXIT_FAILURE;
     }
     window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
+    
+    Bug bug = Bug();
     
     // Start the game loop
     while (window.isOpen())
@@ -53,6 +57,11 @@ int main(int, char const**)
         // Clear screen
         window.clear(sf::Color::White);
 
+        
+        bug.draw(window);
+        bug.move();
+        sf::sleep(sf::seconds(.05));
+        
         // Update the window
         window.display();
     }

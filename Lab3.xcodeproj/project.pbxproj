@@ -28,6 +28,7 @@
 		774730E622B18AB10061B3D2 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
 		77AA09CC22B18D9500EFFF55 /* Bug.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Bug.cpp; sourceTree = "<group>"; };
 		77AA09CD22B18D9500EFFF55 /* Bug.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Bug.hpp; sourceTree = "<group>"; };
+		77AA09D022B18E4900EFFF55 /* global.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = global.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -63,6 +64,7 @@
 				774730DA22B18AB10061B3D2 /* ResourcePath.mm */,
 				774730DC22B18AB10061B3D2 /* ResourcePath.hpp */,
 				774730DD22B18AB10061B3D2 /* main.cpp */,
+				77AA09D022B18E4900EFFF55 /* global.hpp */,
 				77AA09CF22B18D9C00EFFF55 /* Classes */,
 				774730DF22B18AB10061B3D2 /* Resources */,
 				774730D822B18AB10061B3D2 /* Supporting Files */,
