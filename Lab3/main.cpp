@@ -25,7 +25,7 @@
 int main(int, char const**)
 {
     // Create the main window
-    sf::RenderWindow window(sf::VideoMode(WINDOWWIDTH, WINDOWHEIGHT), "SFML window");
+    sf::RenderWindow window(sf::VideoMode(WINDOWWIDTH, WINDOWHEIGHT), "Your Life is a Circle");
 
     // Set the Icon
     sf::Image icon;
@@ -34,7 +34,10 @@ int main(int, char const**)
     }
     window.setIcon(icon.getSize().x, icon.getSize().y, icon.getPixelsPtr());
     
-    Bug bug = Bug();
+    std::vector<Bug> bugs;
+    for (int i = 0; i < 15; i++) {
+        bugs.push_back(Bug(sf::Color(random() % 255 + 1, random() % 255 + 1, random() % 255 + 1, 255), sf::Color(random() % 255 + 1, random() % 255 + 1, random() % 255 + 1, 255), random() % 15 + 10));
+    }
     
     // Start the game loop
     while (window.isOpen())
@@ -55,12 +58,15 @@ int main(int, char const**)
         }
 
         // Clear screen
-        window.clear(sf::Color::White);
+        window.clear(sf::Color::Black);
 
+        for (auto &bug: bugs) {
+            bug.draw(window);
+            bug.move();
+            bug.rotate();
+        }
         
-        bug.draw(window);
-        bug.move();
-        sf::sleep(sf::seconds(.05));
+        sf::sleep(sf::seconds(.0016)); // 60 FPS
         
         // Update the window
         window.display();

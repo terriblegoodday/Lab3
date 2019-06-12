@@ -13,12 +13,14 @@
 #include <cmath>
 #include <SFML/Graphics.hpp>
 #include "global.hpp"
+#include <math.h>
 
 
 Bug::Bug() {
     x = (random() % 500) + 1;
     y = (random() % 400) + 1;
-    r = (random() % 50) + 1;
+    n = 10;
+    R = 100;
     
     if ((x > WINDOWWIDTH) || (x <= 0)) {
         x = (int)WINDOWWIDTH / 2;
@@ -26,55 +28,30 @@ Bug::Bug() {
     if ((y > WINDOWHEIGHT) || (y <= 0)) {
         y = (int)WINDOWHEIGHT / 2;
     };
-    if ((r < 25) || (r > (int)WINDOWHEIGHT / 2)) {
-        r = 25;
+    if ((R < 25) || (R > (int)WINDOWHEIGHT / 2)) {
+        R = 25;
     };
-    if ((x < r) || (y < r) || (x + r > WINDOWWIDTH) || (y + r) > WINDOWHEIGHT) {
+    if ((x < R) || (y < R) || (x + R > WINDOWWIDTH) || (y + R) > WINDOWHEIGHT) {
         x = (int)WINDOWWIDTH / 2;
         y = (int)WINDOWHEIGHT / 2;
     };
     
     color = sf::Color::Red;
-    dx = ((rand() % 1) - 1) * ((rand() % 10) + 1);
-    dy = ((rand() % 1) - 1) * ((rand() % 10) + 1);
+    innerColor = sf::Color::Blue;
+    dx = ((rand() % 1) - 1) * ((rand() % 25) + 1);
+    dy = ((rand() % 1) - 1) * ((rand() % 25) + 1);
     draw();
     dead = false;
+    seed = (rand() % 10 + 1);
     isStopped = false;
     std::cout << "Drew a bug";
     didMultiply = false;
 };
 
-
-Bug::Bug(int16_t xx, int16_t yy, int16_t rr, sf::Color newColor) {
-    if ((xx > WINDOWWIDTH) || (xx <= 0)) {
-        xx = (int)WINDOWWIDTH / 2;
-    };
-    if ((yy > WINDOWHEIGHT) || (yy <= 0)) {
-        yy = (int)WINDOWHEIGHT / 2;
-    };
-    if ((rr < 10) || (rr > (int)WINDOWHEIGHT / 2) || (rr > (int)WINDOWWIDTH / 2)) {
-        rr = 10;
-    };
-    if ((xx < rr) || (yy < rr) || ((xx + rr) > WINDOWWIDTH) || ((yy + rr) > WINDOWHEIGHT)) {
-        xx = (int)WINDOWWIDTH / 2;
-        yy = (int)WINDOWHEIGHT / 2;
-    };
-    x = xx;
-    y = yy;
-    r = rr;
-    color = newColor;
-    dx = ((rand() % 1) - 1) * ((rand() % 10) + 1);
-    dy = ((rand() % 1) - 1) * ((rand() % 10) + 1);
-    didMultiply = false;
-    dead = false;
-    isStopped = false;
-    draw();
-};
-
-Bug::Bug(sf::Color newColor) {
-    x = (random() % WINDOWWIDTH) + 1;
-    y = (random() % WINDOWHEIGHT) + 1;
-    r = (random() % 50) + 1;
+Bug::Bug(sf::Color newColor, sf::Color newInnerColor, int newN) {
+    x = (random() % (WINDOWWIDTH - 400)) + 1;
+    y = (random() % (WINDOWHEIGHT - 400)) + 1;
+    R = (random() % 50) + 100;
     
     if ((x > WINDOWWIDTH) || (x <= 0)) {
         x = (int)WINDOWWIDTH / 2;
@@ -82,36 +59,60 @@ Bug::Bug(sf::Color newColor) {
     if ((y > WINDOWHEIGHT) || (y <= 0)) {
         y = (int)WINDOWHEIGHT / 2;
     };
-    if ((r < 25) || (r > (int)WINDOWHEIGHT / 2)) {
-        r = 25;
+    if ((R < 25) || (R > (int)WINDOWHEIGHT / 2)) {
+        R = 25;
     };
-    if ((x < r) || (y < r) || (x + r > WINDOWWIDTH) || (y + r) > WINDOWHEIGHT) {
+    if ((x < R) || (y < R) || (x + R > WINDOWWIDTH) || (y + R) > WINDOWHEIGHT) {
         x = (int)WINDOWWIDTH / 2;
         y = (int)WINDOWHEIGHT / 2;
     };
     
-    color = sf::Color::Red;
-    dx = ((rand() % 1) - 1) * ((rand() % 10) + 1);
-    dy = ((rand() % 1) - 1) * ((rand() % 10) + 1);
     color = newColor;
-    didMultiply = false;
+    innerColor = newInnerColor;
+    n = newN;
+    dx = ((rand() % 1) - 1) * ((rand() % 5) + 1);
+    dy = ((rand() % 1) - 1) * ((rand() % 5) + 1);
+    seed = (rand() % 10 + 1);
+    draw();
     dead = false;
     isStopped = false;
-    draw();
+    didMultiply = false;
 }
 
 void Bug::draw() {
-    shape.setRadius(r);
-    shape.setFillColor(color);
+    shape.setRadius(R);
+    shape.setOutlineThickness(1);
+    shape.setOutlineColor(color);
+    shape.setFillColor(sf::Color::Transparent);
     shape.setPosition(x, y);
+    
+    float phi = M_PI / n; // an angle between two circles
+    float r = R * (1-sin(phi)) / (1+sin(phi)); // radius of an inner circle
+    float p = r * sin(phi) / (1-sin(phi)); // radius of p of the the steiner chain circles
+    
+    for (int i = 0; i < n; i++) {
+        float cx = cos(2*phi*(i+1) + (t)/4) * (r + p);
+        float cy = sin(2*phi*(i+1) + (t)/4) * (r + p);
+        sf::Vector2f currentPosition = shape.getPosition();
+        sf::Vector2f origin = shape.getOrigin();
+        sf::CircleShape circle = sf::CircleShape(p);
+        circle.setOutlineThickness(3);
+        circle.setOutlineColor(innerColor);
+        circle.setFillColor(sf::Color::Transparent);
+        circle.setPosition(currentPosition.x + cx + R - p, currentPosition.y + R + cy - p);
+        circle.setRadius(p);
+        innerCircles.push_back(circle);
+    };
+    t++;
+    
 }
 
 void Bug::draw(sf::RenderWindow& window) {
-    if (!dead) {
+    
+    for (auto &shape: innerCircles) {
         window.draw(shape);
-    } else {
-        std::cout << "i'm dead" << std::endl;
     }
+    window.draw(shape);
 
 }
 
@@ -119,10 +120,10 @@ void Bug::move() {
     if (!dead && !isStopped)
     {sf::Vector2f currentPosition = shape.getPosition();
         
-        if (currentPosition.y - shape.getRadius() / 2 < 0) {
+        if (currentPosition.y < 0) {
             dy = -dy;
         };
-        if (currentPosition.x - shape.getRadius() / 2 < 0) {
+        if (currentPosition.x < 0) {
             dx = -dx;
         };
         if (currentPosition.y + shape.getRadius() * 2 > WINDOWHEIGHT) {
@@ -134,12 +135,33 @@ void Bug::move() {
         move(dx, dy);}
 }
 
+void Bug::rotate() {
+    float phi = M_PI / n; // an angle between two circles
+    float r = R * (1-sin(phi)) / (1+sin(phi)); // radius of an inner circle
+    float p = r * sin(phi) / (1-sin(phi)); // radius of p of the the steiner chain circles
+    
+    for (int i = 0; i < n; i++) {
+        float k = p * seed;
+        float cx = cos(2*phi*(i+1) + t/k) * (r + p);
+        float cy = sin(2*phi*(i+1) + t/k) * (r + p);
+        sf::Vector2f currentPosition = shape.getPosition();
+        sf::Vector2f origin = shape.getOrigin();
+        sf::CircleShape circle = sf::CircleShape(p);
+        innerCircles[i].setOutlineThickness(3);
+        innerCircles[i].setOutlineColor(innerColor);
+        innerCircles[i].setFillColor(sf::Color::Transparent);
+        innerCircles[i].setPosition(currentPosition.x + cx + R - p, currentPosition.y + R + cy - p);
+        innerCircles[i].setRadius(p);
+    };
+    t++;
+}
+
 bool Bug::meet(Bug& with) {
     sf::Vector2f pos1 = shape.getPosition();
     sf::Vector2f pos2 = with.shape.getPosition();
-    int r1 = r; int r2 = with.r;
+    int R1 = R; int R2 = with.R;
     float d = std::sqrt(std::pow((pos1.x - pos2.x), 2) + std::pow(pos1.y - pos2.y, 2));
-    if (d < (r1 + r2)) {
+    if (d < (R1 + R2)) {
         return true;
     };
     return false;
@@ -147,6 +169,9 @@ bool Bug::meet(Bug& with) {
 
 void Bug::move(int dx, int dy) {
     shape.move(dx, dy);
+    for (auto &shape: innerCircles) {
+        shape.move(dx, dy);
+    }
 }
 
 void Bug::war(Bug& with) {

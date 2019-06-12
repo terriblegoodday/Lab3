@@ -27,14 +27,17 @@ public:
     void stop();
     void move(int dx, int dy);
     void die();
-    int16_t x, y, r;
+    void rotate();
+    int16_t x, y, r, R;
     sf::Color color;
+    sf::Color innerColor;
     // Contructors
     Bug();
-    Bug(sf::Color color);
-    Bug(int16_t xx, int16_t yy, int16_t rr, sf::Color color);
+    Bug(sf::Color color, sf::Color innerColor, int newN);
 private:
-    int dx, dy;
+    std::vector<sf::CircleShape> innerCircles;
+    int dx, dy, n, t;
+    int seed;
 };
 
 #endif /* Bug_hpp */
