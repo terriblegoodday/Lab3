@@ -28,16 +28,24 @@ public:
     void move(int dx, int dy);
     void die();
     void rotate();
+    void setdx(int dx);
+    void setdy(int dx);
+    void repaint();
+    void setColor(sf::Color color);
+    void setInnerColor(sf::Color color);
+    void setColors(sf::Color color, sf::Color innerColor);
+    int getdx();
+    int getdy();
     int16_t x, y, r, R;
     sf::Color color;
     sf::Color innerColor;
     // Contructors
-    Bug();
-    Bug(sf::Color color, sf::Color innerColor, int newN);
+    Bug(sf::Color color, sf::Color innerColor, int n, int r);
 private:
     std::vector<sf::CircleShape> innerCircles;
-    int dx, dy, n, t;
+    int n, t;
     int seed;
+    int dx, dy;
 };
 
 #endif /* Bug_hpp */

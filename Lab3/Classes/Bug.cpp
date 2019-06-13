@@ -15,40 +15,7 @@
 #include "global.hpp"
 #include <math.h>
 
-
-Bug::Bug() {
-    x = (random() % 500) + 1;
-    y = (random() % 400) + 1;
-    n = 10;
-    R = 100;
-    
-    if ((x > WINDOWWIDTH) || (x <= 0)) {
-        x = (int)WINDOWWIDTH / 2;
-    };
-    if ((y > WINDOWHEIGHT) || (y <= 0)) {
-        y = (int)WINDOWHEIGHT / 2;
-    };
-    if ((R < 25) || (R > (int)WINDOWHEIGHT / 2)) {
-        R = 25;
-    };
-    if ((x < R) || (y < R) || (x + R > WINDOWWIDTH) || (y + R) > WINDOWHEIGHT) {
-        x = (int)WINDOWWIDTH / 2;
-        y = (int)WINDOWHEIGHT / 2;
-    };
-    
-    color = sf::Color::Red;
-    innerColor = sf::Color::Blue;
-    dx = ((rand() % 1) - 1) * ((rand() % 25) + 1);
-    dy = ((rand() % 1) - 1) * ((rand() % 25) + 1);
-    draw();
-    dead = false;
-    seed = (rand() % 10 + 1);
-    isStopped = false;
-    std::cout << "Drew a bug";
-    didMultiply = false;
-};
-
-Bug::Bug(sf::Color newColor, sf::Color newInnerColor, int newN) {
+Bug::Bug(sf::Color newColor, sf::Color newInnerColor, int n, int r) {
     x = (random() % (WINDOWWIDTH - 400)) + 1;
     y = (random() % (WINDOWHEIGHT - 400)) + 1;
     R = (random() % 50) + 100;
@@ -69,10 +36,10 @@ Bug::Bug(sf::Color newColor, sf::Color newInnerColor, int newN) {
     
     color = newColor;
     innerColor = newInnerColor;
-    n = newN;
+    this->n = n;
     dx = ((rand() % 1) - 1) * ((rand() % 5) + 1);
     dy = ((rand() % 1) - 1) * ((rand() % 5) + 1);
-    seed = (rand() % 10 + 1);
+    seed = (rand() % 4 + 10);
     draw();
     dead = false;
     isStopped = false;
@@ -81,7 +48,7 @@ Bug::Bug(sf::Color newColor, sf::Color newInnerColor, int newN) {
 
 void Bug::draw() {
     shape.setRadius(R);
-    shape.setOutlineThickness(1);
+    shape.setOutlineThickness(3);
     shape.setOutlineColor(color);
     shape.setFillColor(sf::Color::Transparent);
     shape.setPosition(x, y);
@@ -147,11 +114,7 @@ void Bug::rotate() {
         sf::Vector2f currentPosition = shape.getPosition();
         sf::Vector2f origin = shape.getOrigin();
         sf::CircleShape circle = sf::CircleShape(p);
-        innerCircles[i].setOutlineThickness(3);
-        innerCircles[i].setOutlineColor(innerColor);
-        innerCircles[i].setFillColor(sf::Color::Transparent);
         innerCircles[i].setPosition(currentPosition.x + cx + R - p, currentPosition.y + R + cy - p);
-        innerCircles[i].setRadius(p);
     };
     t++;
 }
@@ -184,10 +147,49 @@ void Bug::war(Bug& with) {
     }
 }
 
+void Bug::repaint() {
+    shape.setOutlineColor(color);
+    for (auto &innerCircle: innerCircles) {
+        innerCircle.setOutlineColor(innerColor);
+    }
+}
+
 void Bug::die() {
     dead = true;
 }
 
 void Bug::stop() {
     dx = 0; dy = 0;
+}
+
+void Bug::setdx(int dx) {
+    if (dx >= -15 or dx <= 15) this->dx = dx;
+}
+
+void Bug::setdy(int dy) {
+    if (dy >= -15 or dy <= 15) this->dy = dy;
+}
+
+int Bug::getdx() {
+    return this->dx;
+}
+
+int Bug::getdy () {
+    return this->dy;
+}
+
+void Bug::setColor(sf::Color color) {
+    this->color = color;
+    this->repaint();
+}
+
+void Bug::setInnerColor(sf::Color color) {
+    this->innerColor = color;
+    this->repaint();
+}
+
+void Bug::setColors(sf::Color color, sf::Color innerColor) {
+    this->color = color;
+    this->innerColor = innerColor;
+    this->repaint();
 }
